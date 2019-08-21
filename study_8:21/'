@@ -1,0 +1,110 @@
+#include <stdio.h>
+int R,C,M;
+struct shark{
+	int r;
+	int c;
+	int s;
+	int d;
+	int z;
+	bool get;
+};
+struct shark sh[10000];
+void catch_shark(int x)
+{
+	bool one=false;
+	for(int i=1;i<=R;i++)
+	{
+		for(int j=0;j<M;j++)
+		{
+			if(sh[j].r==i && sh[j].c==x && sh[j].get==false)
+			{
+				sh[j].get=true;
+				one=true;
+				break;
+			}
+		}
+		if(one==true)
+			break;
+	}
+/*	for(int i=0;i<M;i++)
+	{
+		printf("%u\n",sh[i].get);
+	}*/
+}
+void move_shark()
+{
+	for(int i=0;i<M;i++)
+	{
+		if(sh[i].d==1)
+		{
+			sh[i].r=sh[i].r-sh[i].s;
+			if(sh[i].r<1)
+			{
+				sh[i].r=1+(1-sh[i].r);
+			}
+			// 위로 이동
+		}
+		else if(sh[i].d==2)
+		{
+			// 아래로 이동
+		}
+		else if(sh[i].d==3)
+		{
+			// 오른쪽으로 이동
+		}
+		else if(sh[i].d==4)
+		{
+			//왼쪽으로 이동
+		}
+	}	
+}
+void eat_shark()
+{
+
+}
+void print_shark()
+{
+	int arr[100][100];
+	for(int i=1;i<=R;i++)
+	{
+		for(int j=1;j<=C;j++)
+		{
+			arr[i][j]=0;
+			for(int k=0;k<M;k++)
+			{
+				if(i==sh[k].r && j==sh[k].c && sh[k].get==false)
+				{
+					arr[i][j]=1;
+					
+
+				}
+				else if(i==sh[k].r && j==sh[k].c && sh[k].get==true)
+					arr[i][j]=-1;
+				
+			}
+			printf("%2d",arr[i][j]);
+		}
+		printf("\n");
+	}
+
+}
+int main(void)
+{
+	scanf("%d %d %d",&R,&C,&M);
+	for(int i=0;i<M;i++)
+	{
+		scanf("%d %d %d %d %d",&sh[i].r,&sh[i].c,&sh[i].s,&sh[i].d,&sh[i].z);
+		sh[i].get=false;	
+	}
+	
+	for(int i=1;i<=C;i++)
+	{
+		catch_shark(i);
+		printf("\n");
+		move_shark();
+		print_shark();
+		//move_shark();
+		//eat_shark();
+	}
+
+}
