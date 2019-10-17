@@ -1,109 +1,105 @@
 #include <stdio.h>
 #include <cstring>
-int graph[300][300];
-int sub_graph[300][300];
-int visit[300][300];
+int visit[301][301];
+int arr[301][301];
+int N,M;
 int dx[4]={1,-1,0,0};
 int dy[4]={0,0,1,-1};
-int N,M;
-
-void DFS(int i,int j)
+void func(int x, int y)
 {
-	visit[i][j]=1;
-	int ddx,ddy;
-	for(int x=0;x<4;x++)
+	visit[x][y]=0;
+	for(int i=0;i<4;i++)
 	{
-		ddx=i+dx[x];
-		ddy=j+dy[x];
-		if(ddx<0 || ddy<0 || ddx>=M || ddy>=N)
+		int ddx=x+dx[i];
+		int ddy=y+dy[i];
+		if(ddx<0 || ddy<0 || ddx>=N || ddy>=M)
 			continue;
-		if(visit[ddx][ddy]==0 && graph[ddx][ddy]>=1)
-		{	
-			DFS(ddx,ddy);
-		}
-	}
-}
-void reset()
-{
-	for(int x=0;x<N;x++)
-	{
-		for(int y=0;y<M;y++)
+		if(arr[ddx][ddy]>0 && visit[ddx][ddy]==-1)
 		{
-			int cnt=0;
-			if(sub_graph[x][y]>=1)
-			{
-				for(int t=0;t<4;t++)
-				{
-					int ddx=x+dx[t];
-					int ddy=y+dy[t];
-					if(ddx<0 || ddy<0 || ddx>=M || ddy>=N)
-						continue;
-					if(sub_graph[ddx][ddy]==0)
-					{
-						cnt++;
-					}
-				}
-				graph[x][y]=sub_graph[x][y]-cnt;
-				if(graph[x][y]<0)
-					graph[x][y]=0;
-			}
+			func(ddx,ddy);
 		}
 	}
-	
 }
-int main(void)
+int DFS()
 {
-	scanf("%d %d",&N,&M);
-	
-
-	memset(graph,0,sizeof(graph));
-	memset(sub_graph,0,sizeof(sub_graph));
-
+	int glacier=0;
+	memset(visit,-1,sizeof(visit));
 	for(int i=0;i<N;i++)
 	{
 		for(int j=0;j<M;j++)
 		{
-			scanf("%d",&graph[i][j]);
-			sub_graph[i][j]=graph[i][j];
-		}
-	}
-	int year=0;
-	while(1)
-	{
-
-		int glacier=0;
-		bool result=false;
-		memset(visit,0,sizeof(visit));
-
-		for(int i=1;i<N-1;i++)
-		{
-			for(int j=1;j<M-1;j++)
+			if(arr[i][j]>0 && visit[i][j]==-1)
 			{
-				if(visit[i][j]==0 && graph[i][j]>=1)
-				{
-					glacier++;
-					if(glacier>=2)
-					{
-						result=true;
-						break;
-					}
-					DFS(i,j);
-
-				}
+				glacier++;
+				func(i,j);
 			}
 		}
-		if(result)
-			break;
-		printf("==%d %d==\n",glacier,year);
+	}
+	
+
+	return glacier;
+}
+void melt()
+{
+	int melt[301][301];
+	memset(melt,0,sizeof(melt));
+	for(int i=0;i<N;i++)
+	{
+		for(int j=0;j<M;j++)
+		{
+			if(arr[i][j]>0)
+			{
+				int cnt=0;
+				for(int x=0;x<4;x++)
+				{
+					int ddx=i+dx[x];
+					int ddy=j+dy[x];
+					if(ddx<0 || ddy<0 || ddx>N || ddy>M)
+						continue;
+					if(arr[ddx][ddy]==0)
+						cnt++;
+				}
+				melt[i][j]=cnt;
+			}
+		}
+	}
+	for(int i=0;i<N;i++)
+	{
+		for(int j=0;j<M;j++)
+		{
+			arr[i][j]=arr[i][j]-melt[i][j];
+			if(arr[i][j]<0)
+				arr[i][j]=0;
+		}
+	}
+}
+int main(void)
+{
+	scanf("%d %d",&N,&M);
+	for(int i=0;i<N;i++)
+	{
+		for(int j=0;j<M;j++)
+		{
+			scanf("%d",&arr[i][j]);
+		}
+	}
+	int year=0;	
+	while(1)
+	{
+		//녹음
+		melt();
+		//빙산개수
+		int glacier=DFS();
+		year++;
 		if(glacier==0)
 		{
-			printf("!");
 			year=0;
 			break;
 		}
-		reset();
-		year++;	
+		if(glacier>=2)
+			break;
+
+		//2면 break
 	}
 	printf("%d",year);
 }
-
