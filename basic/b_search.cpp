@@ -7,7 +7,7 @@ int location(int arr[], int low, int high, int x)
 	{
 		int mid=(int)((low+high)/2);
 		if(x==arr[mid])
-			return x;
+			return mid;
 		else if(x>arr[mid])
 		{
 			return location(arr,mid+1,high,x);
