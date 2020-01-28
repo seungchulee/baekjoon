@@ -24,10 +24,11 @@ int main(void)
 		}
 		else
 		{
-			result--;
+			result=-1;
 			break;
 		}
 	}
 	printf("%d",result);
 
 }
+
