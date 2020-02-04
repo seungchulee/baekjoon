@@ -1,108 +1,23 @@
 #include <stdio.h>
 #include <queue>
-#include <utility>
+#include <cstring>
+#include <vector>
 using namespace std;
-int N;
 char arr[51][51];
-int dist[51][51][2];
-int x1;
-int y1;
-int e1,e2;
-int dx[5]={0,0,-1,1,0 };
-int dy[5]={1,-1,0,0,0 };
-void BFS(int shape)
-{
-	queue<pair<pair<int,int>,pair<int,int> > > qq;
-	//queue<pair<pair<int,int>,int> > qq;
-	qq.push(make_pair(make_pair(x1,y1),make_pair(shape,0)));
-	dist[x1][y1][shape]=0;
-	while(!qq.empty())
-	{	
-
-		pair<pair<int,int>,pair<int,int> > ss;
-		ss=qq.front();
-		int xx=ss.first.first;
-		int yy=ss.first.second;
-		int sh=ss.second.first;
-		int cnt=ss.second.second;
-		qq.pop();
-
-		if(sh==0) // ㅣ shape
-		{
-
-			/*if(yy-1<0 || yy+1>=N || xx-2<0 || xx+2>=N)
-				continue;*/
-			if(yy-1>=0 && dist[xx][yy-1][0]==-1 && arr[xx][yy-1]=='0' && arr[xx-1][yy-1]=='0' && arr[xx+1][yy-1]=='0')
-			{
-				qq.push(make_pair(make_pair(xx,yy-1),make_pair(0,0)));	
-				dist[xx][yy-1][0]=dist[xx][yy][0]+1;
-			} // left
-			if(yy+1<N && dist[xx][yy+1][0]==-1 && arr[xx][yy+1]=='0' && arr[xx-1][yy+1]=='0' && arr[xx+1][yy+1]=='0')
-			{
-				qq.push(make_pair(make_pair(xx,yy+1),make_pair(0,0)));
-				dist[xx][yy+1][0]=dist[xx][yy][0]+1;
-			} // right
-			
-			if(xx-2>=0 && dist[xx-1][yy][0]==-1 && arr[xx-2][yy]=='0' )
-			{
-				qq.push(make_pair(make_pair(xx-1,yy),make_pair(0,0)));
-				dist[xx-1][yy][0]=dist[xx][yy][0]+1;
-			} // up
-			if(xx+2<N && dist[xx+1][yy][0]==-1 && arr[xx+2][yy]=='0')
-			{
-				qq.push(make_pair(make_pair(xx+1,yy),make_pair(0,0)));
-				dist[xx+1][yy][0]=dist[xx][yy][0]+1;
-			} // down
-			if(arr[xx-1][yy-1]=='0' && arr[xx-1][yy+1]=='0' && arr[xx+1][yy+1]=='0' && arr[xx+1][yy-1]=='0' && arr[xx][yy-1]=='0' && arr[xx][yy+1]=='0' && cnt==0)
-			{
-				qq.push(make_pair(make_pair(xx,yy),make_pair(1,1)));
-				dist[xx][yy][1]=dist[xx][yy][0]+1;
-			} // rotate
-			
-		}
-		if(sh==1) // ㅡ shape
-		{
-			/*if(yy-2<0 || yy+2>=N || xx-1<0 || xx+1>=N)
-				continue;*/
-
-			if(xx-1>=0 && dist[xx-1][yy][1]==-1 && arr[xx-1][yy]=='0' && arr[xx-1][yy-1]=='0' && arr[xx-1][yy+1]=='0')
-			{
-				qq.push(make_pair(make_pair(xx-1,yy),make_pair(1,0)));
-				dist[xx-1][yy][1]=dist[xx][yy][1]+1;
-			} // up 
-			if(xx+1<N && dist[xx+1][yy][1]==-1 && arr[xx+1][yy]=='0' && arr[xx+1][yy-1]=='0' && arr[xx+1][yy+1]=='0')
-			{
-				//printf("!");
-				qq.push(make_pair(make_pair(xx+1,yy),make_pair(1,0)));
-				dist[xx+1][yy][1]=dist[xx][yy][1]+1;
-			} // down
-			if(yy-2>=0 && dist[xx][yy-1][1]==-1 && arr[xx][yy-2]=='0')
-			{
-					
-				qq.push(make_pair(make_pair(xx,yy-1),make_pair(1,0)));
-				dist[xx][yy-1][1]=dist[xx][yy][1]+1;
-			} // left
-			if(yy+2<N && dist[xx][yy+1][1]==-1 && arr[xx][yy+2]=='0')
-			{
-
-				qq.push(make_pair(make_pair(xx,yy+1),make_pair(1,0)));
-				dist[xx][yy+1][1]=dist[xx][yy][1]+1;
-			} // right
-			if(arr[xx-1][yy-1]=='0' && arr[xx-1][yy]=='0' && arr[xx-1][yy+1]=='0' && arr[xx+1][yy+1]=='0' && arr[xx+1][yy]=='0' && arr[xx+1][yy-1]=='0' && cnt==0)
-			{
-
-				qq.push(make_pair(make_pair(xx,yy),make_pair(0,1)));
-				dist[xx][yy][0]=dist[xx][yy][1]+1;
-			} // rotate
-		}
-	}
-			
-}
+int visit[51][51][2];
+int N;
+// 0 => garo
+// 1 => sero
 int main(void)
 {
-	memset(dist,-1,sizeof(dist));
 	scanf("%d",&N);
-	
+	memset(visit,-1,sizeof(visit));
+	int b_i,b_j,b_cnt,b_dir;
+	int e_i,e_j,e_cnt,e_dir;
+	b_cnt=0;
+	e_cnt=0;
+	vector<pair<int,int> > vb;
+	vector<pair<int,int> > ve;
 	for(int i=0;i<N;i++)
 	{
 		char st[51];
@@ -110,91 +25,136 @@ int main(void)
 		for(int j=0;j<N;j++)
 		{
 			arr[i][j]=st[j];
-		}
-	}
-	int cnt=0;
-	int shape=0;
-	for(int i=0;i<N;i++)
-	{
-		for(int j=0;j<N;j++)
-		{
 			if(arr[i][j]=='B')
 			{
-
-				if(arr[i][j+1]=='B')
-				{
-					x1=i;
-					y1=j+1;
-					shape=1;
-				}
-				else if(arr[i+1][j]=='B')
-				{
-					x1=i+1;
-					y1=j;
-					shape=0;
-				}
-				cnt++;
-				break;
-			}	
-		}
-		if(cnt==1)
-			break;
-	}
-
-	cnt=0;
-	for(int i=0;i<N;i++)
-	{
-		for(int j=0;j<N;j++)
-		{
+				arr[i][j]='0';
+				vb.push_back(make_pair(i,j));
+			}
 			if(arr[i][j]=='E')
 			{
-				if(arr[i][j+1]=='E')
-				{
-					e1=i;
-					e2=j+1;
-				}
-				else if(arr[i+1][j]=='E')
-				{
-					e1=i+1;
-					e2=j;
-				}
-				cnt++;
-				break;
+				arr[i][j]='0';
+				ve.push_back(make_pair(i,j));
 			}
 		}
-		if(cnt==1)
-			break;
 	}
-	
-	for(int i=0;i<N;i++)
+
+	b_i=vb[1].first;
+	b_j=vb[1].second;
+	if(vb[1].second>vb[0].second)
+		b_dir=0;
+	else
+		b_dir=1;
+	e_i=ve[1].first;
+	e_j=ve[1].second;
+	if(ve[1].second>ve[0].second)
+		e_dir=0;
+	else
+		e_dir=1;
+	visit[b_i][b_j][b_dir]=0;
+	queue<pair<int,pair<int,int> > > qq;
+	qq.push(make_pair(b_dir,make_pair(b_i,b_j)));
+	while(!qq.empty())
 	{
-		for(int j=0;j<N;j++)
+		pair<int,pair<int,int> > pp=qq.front();
+		qq.pop();
+		int dir = pp.first;
+		int x = pp.second.first;
+		int y = pp.second.second;
+
+		if(dir==0)
 		{
-			if(arr[i][j]=='B' || arr[i][j]=='E')
-				arr[i][j]='0';
+			//U
+			if(x>0)
+			{
+				if(arr[x-1][y-1]=='0' && arr[x-1][y+1]=='0' && arr[x-1][y]=='0' && visit[x-1][y][dir]==-1)
+				{
+					visit[x-1][y][dir]=visit[x][y][dir]+1;
+					qq.push(make_pair(dir,make_pair(x-1,y)));
+				}
+			}
+			//D
+			if(x+1<N)
+			{
+				if(arr[x+1][y]=='0' && arr[x+1][y-1]=='0' && arr[x+1][y+1]=='0' && visit[x+1][y][dir]==-1)
+				{
+					visit[x+1][y][dir]=visit[x][y][dir]+1;
+					qq.push(make_pair(dir,make_pair(x+1,y)));
+				}
+			}
+			//L
+			if(y-1-1>=0)
+			{
+				if(arr[x][y-2]=='0' && visit[x][y-1][dir]==-1)
+				{
+					visit[x][y-1][dir]=visit[x][y][dir]+1;
+					qq.push(make_pair(dir,make_pair(x,y-1)));
+				}
+			}
+			//R
+			if(y+1+1<N)
+			{
+				if(arr[x][y+2]=='0' && visit[x][y+1][dir]==-1)
+				{
+					visit[x][y+1][dir]=visit[x][y][dir]+1;
+					qq.push(make_pair(dir,make_pair(x,y+1)));
+				}
+			}
+			//T
+			if(arr[x-1][y]=='0' && arr[x+1][y]=='0' && arr[x-1][y-1]=='0' && arr[x-1][y+1]=='0' && arr[x+1][y-1]=='0' && arr[x+1][y+1]=='0' && visit[x][y][1]==-1)
+			{
+				visit[x][y][1]=visit[x][y][dir]+1;
+				qq.push(make_pair(1,make_pair(x,y)));
+			}
 		}
-	}
-
-
-	BFS(shape);
-	for(int i=0;i<N;i++)
-	{
-		for(int j=0;j<N;j++)
+		else
 		{
-			printf("%d ",dist[i][j][0]);
-		}
-		printf("\n");
-	}
-	printf("\n");
-	for(int i=0;i<N;i++){
-		for(int j=0;j<N;j++){
-			printf("%d ",dist[i][j][1]);
+			//U
+			if(x-1-1>=0)
+			{
+				if(arr[x-2][y]=='0' && visit[x-1][y][dir]==-1)
+				{
+					visit[x-1][y][dir]=visit[x][y][dir]+1;
+					qq.push(make_pair(dir,make_pair(x-1,y)));
+				}
+			}
+			//D
+			if(x+1+1<N)
+			{
+				if(arr[x+2][y]=='0' && visit[x+1][y][dir]==-1)
+				{
+					visit[x+1][y][dir]=visit[x][y][dir]+1;
+					qq.push(make_pair(dir,make_pair(x+1,y)));
+				}
+			}
+			//L
+			if(y-1>=0)
+			{
+				if(arr[x-1][y-1]=='0' && arr[x+1][y-1]=='0' && arr[x][y-1]=='0' && visit[x][y-1][dir]==-1)
+				{
+					qq.push(make_pair(dir,make_pair(x,y-1)));
+					visit[x][y-1][dir]=visit[x][y][dir]+1;
+				}
+			}
+			//R
+			if(y+1<N)
+			{
+				if(arr[x-1][y+1]=='0' && arr[x+1][y+1]=='0' && arr[x][y+1]=='0' && visit[x][y+1][dir]==-1)
+				{
+					qq.push(make_pair(dir,make_pair(x,y+1)));
+					visit[x][y+1][dir]=visit[x][y][dir]+1;
+				}
+			}
+			//T
+			if(arr[x][y-1]=='0' && arr[x][y+1]=='0'  && arr[x-1][y-1]=='0' && arr[x-1][y+1]=='0' && arr[x+1][y-1]=='0' && arr[x+1][y+1]=='0' && visit[x][y][0]==-1)
+			{
+				visit[x][y][0]=visit[x][y][dir]+1;
+				qq.push(make_pair(0,make_pair(x,y)));
+			}
 
 		}
-		printf("\n");
 	}
-
-
-	printf("\n%d %d",dist[e1][e2][0],dist[e1][e2][1]);
-	
+	if(visit[e_i][e_j][e_dir]==-1)
+		printf("0");
+	else
+		printf("%d",visit[e_i][e_j][e_dir]);
 }
