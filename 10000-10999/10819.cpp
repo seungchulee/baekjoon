@@ -1,36 +1,28 @@
 #include <stdio.h>
-#include <cstring>
+#include <algorithm>
+#include <vector>
+using namespace std;
 int N;
-int arr[10];
-int check[10];
-void func(int index)
-{
-	if(index==N)
-	{
-		for(int i=0;i<N;i++)
-			printf("%d ",check[i]);
-		printf("\n");
-		return;
-	}
-	for(int i=0;i<N;i++)
-	{
-		if(check[i]>=0)
-			continue;
-		check[i]=i;
-		func(index+1);
-		check[i]=-1;
-
-	}
-}
-
 int main(void)
 {
-	memset(check,-1,sizeof(check));
 	scanf("%d",&N);
+	vector<int> vv;
 	for(int i=0;i<N;i++)
-	{
-		scanf("%d",&arr[i]);
+	{	
+		int x;
+		scanf("%d",&x);
+		vv.push_back(x);
 	}
-
-	func(0);
+	int maxs=-1;
+	sort(vv.begin(),vv.end());
+	do{
+		int tmp=0;
+		for(int i=0;i<vv.size()-1;i++)
+		{
+			tmp+=abs(vv[i]-vv[i+1]);
+		}
+		maxs=max(maxs,tmp);
+	}while(next_permutation(vv.begin(),vv.end()));
+	printf("%d",maxs);
 }
+
