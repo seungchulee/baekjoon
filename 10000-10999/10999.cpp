@@ -44,11 +44,18 @@ void updates(int start ,int end, int left, int right, int idx, long long int val
 long long int finds(int start, int end, int left ,int right, int idx)
 {
 	update_lazy(idx,start,end);
-	if(left>end || right<start)
-		return 0;
-	if(left <= start && end<=right)
+	if(start==left && right==end)
 		return arr[idx];
-	return finds(start,(start+end)/2,left,right,idx*2)+finds((start+end)/2+1,end,left,right,idx*2+1);
+	int nstart = start;
+	int nend=(start+end)/2;
+	long long int res = 0;
+	if(left>=nstart && left<=nend)
+		res+=finds(nstart,nend,left,min(right,nend),idx*2);
+	nstart=(start+end)/2+1;
+	nend=end;
+	if(right>=nstart && right<=nend)
+		res+=finds(nstart,nend,max(left,nstart),right,idx*2+1);
+	return res;
 }
 int main(void)
 {
@@ -82,3 +89,4 @@ int main(void)
 		}
 	}
 }
+
