@@ -1,78 +1,52 @@
 #include <stdio.h>
+#include <iostream>
 #include <vector>
+#include <queue>
 #include <algorithm>
-#include <utility>
-#include <cstring>
 using namespace std;
-int N,M;
 int arr[51][51];
-int minsmins=10000000;
-vector<pair<int,int> > one;
-vector<pair<int,int> > two;
-int check[14];
-void func(int index,int cnt)
-{
-	if(index>two.size())
-		return;
-	if(cnt==M)
-	{
-		
-		int sum=0;
-		for(int i=0;i<one.size();i++)
-		{
-			pair<int,int> ss;
-			ss=one[i];
-			int xx=ss.first;
-			int yy=ss.second;
-
-			int mins=10000000;
-			for(int j=0;j<two.size();j++)
-			{
-				if(check[j]==1)
-				{
-					pair<int,int> dd;
-					dd=two[j];
-					int xxx=dd.first;
-					int yyy=dd.second;
-
-					int dist=abs(xx-xxx)+abs(yy-yyy);
-					mins=min(dist,mins);
-				}
-
-			}
-			sum+=mins;
-		}
-		minsmins=min(sum,minsmins);
-
-		return;
-	}
-	
-	check[index]=1;
-	func(index+1,cnt+1);
-
-	check[index]=0;
-	func(index+1,cnt);
-
-}
+int M, N;
+int dist = 10000000;
 int main(void)
 {
-	scanf("%d %d",&N,&M);
-	memset(check,0,sizeof(check));
-	for(int i=0;i<N;i++)
-	{
-		for(int j=0;j<N;j++)
-		{
-			scanf("%d",&arr[i][j]);
-			if(arr[i][j]==1)
-				one.push_back(make_pair(i,j));
-			if(arr[i][j]==2)
-			{
-				two.push_back(make_pair(i,j));
+	vector<pair<int,int> > house;
+	vector<pair<int, int> > chicken;
+	scanf("%d %d", &N, &M);
+	int ch = 0;
+	for(int i=0;i<N;i++){
+		for(int j=0;j<N;j++){
+			scanf("%d", &arr[i][j]);
+			if(arr[i][j] == 1){
+				house.push_back(make_pair(i, j));
+			}
+			if (arr[i][j] == 2){
+				chicken.push_back(make_pair(i, j));
+				ch++;
 			}
 		}
 	}
-
-	func(0,0);
-
-	printf("%d",minsmins);	
+	vector<int> check;
+	for(int i=0;i<M;i++){
+		check.push_back(0);
+	}
+	for(int i=0;i<ch-M;i++){
+		check.push_back(1);
+	}
+	int chicken_dist = 10000000;
+	do{
+		int entire = 0;
+		for(int i=0;i<house.size();i++){
+			int house_min = 10000000;
+			for(int j=0;j<chicken.size();j++){
+				if(check[j] == 0){
+					int dist = abs(house[i].first - chicken[j].first) + abs(house[i].second - chicken[j].second);
+					house_min = min(house_min, dist);
+				}
+			}
+			entire += house_min;
+		}
+		chicken_dist = min(chicken_dist, entire);
+	}while(next_permutation(check.begin(), check.end()));
+	printf("%d", chicken_dist);
+	
 }
